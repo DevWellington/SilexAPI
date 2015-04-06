@@ -14,10 +14,13 @@ $app['productService'] = function() use($app)
     return new \DevWellington\Shop\Service\ProductService($productEntity, $productMapper);
 };
 
-$app->get('/', function(){
-    $result = 'curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: a0ccc891-62c6-8ef2-633c-65977ae259f5" -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -F "name=Notebook" -F "description=Notebook Dell Inspiron 1545" -F "value=1300" http://localhost:8080/insert/product<br /><br />';
-    $result .= 'curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: bb68e03c-cefc-9001-1117-02deace2306e" -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -F "name=Notebook HP" -F "description=Notebook HP Core i5" -F "value=2000" http://localhost:8080/update/product/1<br /><br />';
-    $result .= 'curl -X POST -H "Cache-Control: no-cache" -H "Postman-Token: c84f0f6e-9288-41d5-2d90-45ebb7bfabdd" -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -F "name=Notebook HP" -F "description=Notebook HP Core i5" -F "value=2000" http://localhost:8080/delete/product/1<br /><br />';
+$host = filter_var("http://".$_SERVER["HTTP_HOST"], FILTER_SANITIZE_URL);
+
+$app->get('/', function() use($host){
+
+    $result = 'curl -X POST -H "Cache-Control: no-cache" -H "Content-Type: multipart/form-data;" -F "name=Notebook" -F "description=Notebook Dell Inspiron 1545" -F "value=1300" '.$host.'/insert/product<br /><br />';
+    $result .= 'curl -X POST -H "Cache-Control: no-cache" -H "Content-Type: multipart/form-data;" -F "name=Notebook HP" -F "description=Notebook HP Core i5" -F "value=2000" '.$host.'/update/product/1<br /><br />';
+    $result .= 'curl -X POST -H "Cache-Control: no-cache" -H "Content-Type: multipart/form-data;" -F "name=Notebook HP" -F "description=Notebook HP Core i5" -F "value=2000" '.$host.'/delete/product/1<br /><br />';
 
     return $result;
 });
