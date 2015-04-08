@@ -1,0 +1,57 @@
+{% extends "layout.twig" %}
+
+{% block title %}Lista de Produtos{% endblock %}
+
+{% block content %}
+    <div class='container'>
+        <h1 style="float: left">Lista de Produtos</h1>
+        <a href="{{ path('get-products-insert') }}" class="btn btn-primary btn-lg active" style="float: right; margin: 1.250em 1.250em 0 0" role="button">Inserir</a>
+
+        <div class="clearfix"></div>
+        {% if msg.status == 'true' %}
+            <div class="alert alert-success" role="alert"><strong>Sucesso!</strong> Registro {{ msg.description }}.</div>
+        {% elseif msg.status == 'false' %}
+            <div class="alert alert-danger" role="alert"><strong>Erro!</strong> Registro não foi {{ msg.description }}!</div>
+        {% endif %}
+
+        <table class='table table-striped table-bordered' style='margin-top: 2em;'>
+            <thead>
+                <th style="display: none;">ID</th>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Actions</th>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td style="display: none">{{ product.id }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.description }}</td>
+                        <td>R$ {{ product.value }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                                    Ações
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                    <li role="presentation">
+                                        <a role="menuitem" href="{{ path('get-products-edit', {id: product.id}) }}">
+                                            <span class="glyphicon glyphicon-edit"></span> Editar
+                                        </a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a role="menuitem" href="{{ path('app-product-delete', {id: product.id }) }}">
+                                            <span class="glyphicon glyphicon-remove"></span> Excluir
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

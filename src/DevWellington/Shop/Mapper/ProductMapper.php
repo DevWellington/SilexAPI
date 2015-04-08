@@ -43,6 +43,31 @@ class ProductMapper implements MapperInterface
     }
 
     /**
+     * @return array|bool
+     */
+    public function fetchAll()
+    {
+        $sql = "SELECT * FROM product";
+
+        $stmt = $this->pdo->prepare($sql);
+        if($stmt->execute())
+            return $stmt->fetchAll(\PDO::FETCH_OBJ);
+
+        return false;
+    }
+
+    public function fetch($id)
+    {
+        $sql = "SELECT * FROM product WHERE id = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+        if($stmt->execute(array(':id' => $id)))
+            return $stmt->fetch(\PDO::FETCH_OBJ);
+
+        return false;
+    }
+
+    /**
      * @return bool|EntityInterface
      */
     public function insert()
@@ -102,6 +127,9 @@ class ProductMapper implements MapperInterface
         return false;
     }
 
+    /**
+     * @return array
+     */
     private function returnData()
     {
         $data['id'] =

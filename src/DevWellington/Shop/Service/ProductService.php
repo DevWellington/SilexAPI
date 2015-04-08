@@ -30,6 +30,19 @@ class ProductService implements ServiceInterface
     }
 
     /**
+     * @return mixed
+     */
+    public function fetchAll()
+    {
+        return $this->productMapper->fetchAll();
+    }
+
+    public function fetch($id)
+    {
+        return $this->productMapper->fetch((int) $id);
+    }
+
+    /**
      * @param array $data
      * @return mixed
      */
@@ -45,6 +58,10 @@ class ProductService implements ServiceInterface
         ;
     }
 
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function update(array $data)
     {
         $this->productEntity->setId($data['id']);
@@ -58,6 +75,10 @@ class ProductService implements ServiceInterface
         ;
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function delete($id)
     {
         $this->productEntity->setId($id);
