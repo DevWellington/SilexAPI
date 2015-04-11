@@ -88,4 +88,14 @@ class ProductService implements ServiceInterface
             ->delete()
         ;
     }
+
+    public function validate(array $data)
+    {
+        $this->productEntity->setId($data['id']);
+        $this->productEntity->setName($data['name']);
+        $this->productEntity->setDescription($data['description']);
+        $this->productEntity->setValue($data['value']);
+
+        return $this->productEntity;
+    }
 } 

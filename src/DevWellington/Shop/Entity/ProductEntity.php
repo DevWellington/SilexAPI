@@ -2,6 +2,9 @@
 
 namespace DevWellington\Shop\Entity;
 
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
+
 class ProductEntity implements EntityInterface
 {
     private $id;
@@ -80,5 +83,22 @@ class ProductEntity implements EntityInterface
         $this->value = $value;
         return $this;
     }
+
+    /**
+     * @param ClassMetadata $metadata
+     */
+    static public function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('name', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('description', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('description',
+            new Assert\Length(array(
+                'min' => 5,
+                'max' => 200
+            ))
+        );
+        $metadata->addPropertyConstraint('value', new Assert\NotBlank());
+    }
+
 
 } 

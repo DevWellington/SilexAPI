@@ -15,6 +15,8 @@ $app['productService'] = function() use($app)
     return new \DevWellington\Shop\Service\ProductService($productEntity, $productMapper);
 };
 
+// Todo: create 'serviceProductValidator'
+
 $app->get('/', function() use($app){
     return $app->redirect($app['url_generator']->generate('get-products'));
 });
@@ -60,7 +62,6 @@ $app->get('/products/insert/', function() use($app){
     ->bind('get-products-insert')
 ;
 
-// todo: Refactor to API
 $app->get('/app/product/delete/{id}', function($id) use ($app){
 
     $return = $app['productService']->delete((int) $id);
@@ -74,13 +75,28 @@ $app->get('/app/product/delete/{id}', function($id) use ($app){
 
 $app->post('/app/product/', function(Request $request) use ($app){
 
-    $return = $app['productService']->insert(
-        [
-            'name' => $request->request->get('name'),
-            'description' => $request->request->get('description'),
-            'value' => $request->request->get('value')
-        ]
-    );
+    $data = [
+        'name' => $request->request->get('name'),
+        'description' => $request->request->get('description'),
+        'value' => $request->request->get('value')
+    ];
+
+    $isValid = $app['validator']->validate($app['productService']->validate($data));
+
+    $returnValidate = array();
+    if (count($isValid) > 0){
+        foreach ($isValid as $noValids) {
+            $returnValidate[$noValids->getPropertyPath()] = $noValids->getMessage();
+        }
+
+        $app['session']->set('msg_status', 'false');
+        $app['session']->set('msg_description', $returnValidate);
+
+        return $app->redirect($app['url_generator']->generate('get-products'));
+
+    }
+
+    $return = $app['productService']->insert($data);
 
     $app['session']->set('msg_status', ! $return === false);
     $app['session']->set('msg_description', 'Inserido');
@@ -93,14 +109,29 @@ $app->post('/app/product/', function(Request $request) use ($app){
 
 $app->put('/app/product/', function(Request $request) use ($app){
 
-    $return = $app['productService']->update(
-        [
-            'id' => (int) $request->request->get('id'),
-            'name' => $request->request->get('name'),
-            'description' => $request->request->get('description'),
-            'value' => $request->request->get('value')
-        ]
-    );
+    $data = [
+        'id' => (int) $request->request->get('id'),
+        'name' => $request->request->get('name'),
+        'description' => $request->request->get('description'),
+        'value' => $request->request->get('value')
+    ];
+
+    $isValid = $app['validator']->validate($app['productService']->validate($data));
+
+    $returnValidate = array();
+    if (count($isValid) > 0){
+        foreach ($isValid as $noValids) {
+            $returnValidate[$noValids->getPropertyPath()] = $noValids->getMessage();
+        }
+
+        $app['session']->set('msg_status', 'false');
+        $app['session']->set('msg_description', $returnValidate);
+
+        return $app->redirect($app['url_generator']->generate('get-products'));
+
+    }
+
+    $return = $app['productService']->update($data);
 
     $app['session']->set('msg_status', ! $return === false);
     $app['session']->set('msg_description', 'Alterado');

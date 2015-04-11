@@ -9,8 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ApiControllerProvider implements ControllerProviderInterface
 {
-    // todo: Data validate with (http://silex.sensiolabs.org/doc/providers/validator.html)
-
     /**
      * Returns routes to connect to the given application.
      *
@@ -42,13 +40,27 @@ class ApiControllerProvider implements ControllerProviderInterface
 
         $controllers->post('/product/', function(Request $request) use($app){
 
-            $result = $app['productService']->insert(
-                [
-                    'name' => $request->request->get('name'),
-                    'description' => $request->request->get('description'),
-                    'value' => $request->request->get('value')
-                ]
-            );
+            $data = [
+                'name' => $request->request->get('name'),
+                'description' => $request->request->get('description'),
+                'value' => $request->request->get('value')
+            ];
+
+            $isValid = $app['validator']->validate($app['productService']->validate($data));
+
+            $returnValidate['status'] = 'error';
+            if (count($isValid) > 0){
+                foreach ($isValid as $noValids) {
+                    $returnValidate['fieldsError'][$noValids->getPropertyPath()] = $noValids->getMessage();
+                }
+
+                return $app->json($returnValidate);
+            }
+
+            $resultData = $app['productService']->insert($data);
+
+            $result['status'] = ($resultData !== false) ? 'success' : ($resultData !== false);
+            $result['data'] = $resultData;
 
             return $app->json($result);
         })
@@ -57,14 +69,28 @@ class ApiControllerProvider implements ControllerProviderInterface
 
         $controllers->put('/product/{id}', function(Request $request, $id) use($app){
 
-            $result = $app['productService']->update(
-                [
-                    'id' => (int) $id,
-                    'name' => $request->request->get('name'),
-                    'description' => $request->request->get('description'),
-                    'value' => $request->request->get('value')
-                ]
-            );
+            $data = [
+                'id' => (int) $request->request->get('id'),
+                'name' => $request->request->get('name'),
+                'description' => $request->request->get('description'),
+                'value' => $request->request->get('value')
+            ];
+
+            $isValid = $app['validator']->validate($app['productService']->validate($data));
+
+            $returnValidate['status'] = 'error';
+            if (count($isValid) > 0){
+                foreach ($isValid as $noValids) {
+                    $returnValidate['fieldsError'][$noValids->getPropertyPath()] = $noValids->getMessage();
+                }
+
+                return $app->json($returnValidate);
+            }
+
+            $resultData = $app['productService']->update($data);
+
+            $result['status'] = ($resultData !== false) ? 'success' : ($resultData !== false);
+            $result['data'] = $resultData;
 
             return $app->json($result);
         })
@@ -73,7 +99,10 @@ class ApiControllerProvider implements ControllerProviderInterface
 
         $controllers->delete('/product/{id}', function($id) use($app){
 
-            $result = $app['productService']->delete((int) $id);
+            $resultData  = $app['productService']->delete((int) $id);
+
+            $result['status'] = ($resultData !== false) ? 'success' : ($resultData !== false);
+            $result['data'] = $resultData;
 
             return $app->json($result);
         })

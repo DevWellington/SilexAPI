@@ -11,7 +11,9 @@
         {% if msg.status == 'true' %}
             <div class="alert alert-success" role="alert"><strong>Sucesso!</strong> Registro {{ msg.description }}.</div>
         {% elseif msg.status == 'false' %}
-            <div class="alert alert-danger" role="alert"><strong>Erro!</strong> Registro não foi {{ msg.description }}!</div>
+            {% for field, message in msg.description %}
+                <div class="alert alert-danger" role="alert"><strong>Erro!</strong> Campo: '{{ field }}' - Mensagem: {{ message }}!</div>
+            {% endfor %}
         {% endif %}
 
         <table class='table table-striped table-bordered' style='margin-top: 2em;'>
